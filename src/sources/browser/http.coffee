@@ -11,8 +11,9 @@ class HTTPSource extends EventEmitter
         
     start: ->
         if @length
+            return if @offset >= @length
             return @loop() unless @inflight
-        
+
         @inflight = true
         @xhr = new XMLHttpRequest()
         
@@ -69,7 +70,7 @@ class HTTPSource extends EventEmitter
         @xhr.open("GET", @url, true)
         @xhr.responseType = "arraybuffer"
 
-        endPos = Math.min(@offset + @chunkSize, @length)
+        endPos = Math.min(@offset + @chunkSize, @length - 1)
         @xhr.setRequestHeader("If-None-Match", "webkit-no-cache")
         @xhr.setRequestHeader("Range", "bytes=#{@offset}-#{endPos}")
         @xhr.overrideMimeType('text/plain; charset=x-user-defined')
